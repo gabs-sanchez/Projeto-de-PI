@@ -5,9 +5,11 @@ USE dbProjetoMuvi;
 CREATE TABLE tbGestor(
         idGestor INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         passwordGestor VARCHAR(16) NOT NULL , 
-        emailGestor  VARCHAR(60) NOT NULL,
+        nomeGestor VARCHAR(40) NOT NULL, 
+	emailGestor  VARCHAR(60) NOT NULL,
 	cpfGestor CHAR(11) NOT NULL
-        --Foreign telefoneGestor
+        fkTelefoneGestor CHAR(14),
+	FOREIGN KEY fkTelefoneGestor REFERENCES tbTelGestor(numeroEmpresarialTelefone)
 );
 
 CREATE TABLE tbTelGestor(
@@ -20,8 +22,11 @@ CREATE TABLE tbTelGestor(
 CREATE TABLE tbShopping(
         idShopping INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         cnpjShopping CHAR(11) NOT NULL
-        -- Foreign key para conectar com a localização
-        -- Foreign key para conectar com o gestor
+        fkCepShopping VARCHAR(15),
+	fkNomeGestor VARCHAR(40) NOT NULL,
+	FOREIGN KEY fkCepShopping REFERENCES tbEnderecoShopping(cepShopping),
+        FOREIGN KEY fkNomeGestor REFERENCES tbGestor(nomeGestor)
+
 );
 
 CREATE TABLE tbEnderecoShopping(
@@ -39,7 +44,9 @@ CREATE TABLE tbSetor(
         idSetor INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         nomeSetor VARCHAR(40),
         quantidadeSetores INT 
-        -- Foreign key para conectar com tbSensorShopping      
+	fkQuantidadePessoasSensor INT, 
+	FOREIGN KEY fkQuantidadePessoasSensor REFERENCES tbSensorShopping(quantidadePessoasSensor)
+              
 );
 
 
@@ -50,9 +57,4 @@ CREATE TABLE tbSensorShopping(
         quantidadePessoasSensor INT
 );
 
-CREATE TABLE tbQtdSetor(
-        idQtdSetor INT NOT NULL PRIMARY KEY  AUTO_INCREMENT
-        -- FOREIGN no idSetor
-        -- FOREIGN no quantidadesSensores
-        -- FOREIGN no quantidadePessoasSensor
-);
+
