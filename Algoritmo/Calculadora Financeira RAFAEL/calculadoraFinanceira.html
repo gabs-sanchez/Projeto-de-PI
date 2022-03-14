@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Calculadora Financeira</title>
+</head>
+<body>
+	<h2 style="color:grey"><b> Programa <i>calculadora financeira (Muvi System)</i></b> </h1>
+
+	Insira quantos setores nossos sensores estão presentes<br>
+	<input id="setoresPresentes" placeholder="ex: 6">
+	<br> <br>
+	Insira a quantidade de pessoas em todos os setores (Dado do sensor)<br> 
+	<input id="qtdSensor" placeholder="ex: 12000">
+	<br><br>
+	Insira o valor do aluguel da loja atualmente.<br>
+	<input id="valAluguelr" placeholder="ex: 3000">
+	<br><br>
+	<button onclick="calculoSensor()"> calcular</button>
+	<br><br>
+	<div id="mostrarDados">
+	
+	</div>
+
+	
+
+
+	<br><br><br>
+
+		
+	
+</body>
+<script>
+
+function calculoSensor(){
+		var setores= Number(setoresPresentes.value);
+		var qtdPessoas = Number(qtdSensor.value);
+		var valorAluguel = Number(valAluguelr.value);
+		var pessoaPorSetor= qtdPessoas/setores;
+		var lucroAluguel = valorAluguel+(pessoaPorSetor+qtdPessoas)*0.20; 
+
+		mostrarDados.innerHTML = `
+
+
+		<span style="color:black;"> A quantidade de pessoas que se encontram por setor é de: <b> ${pessoaPorSetor} pessoas  </b> </span><br>
+			<span style="color:black;"> Atualmente, você paga <b> R$${valorAluguel}</b> de aluguel, porém, com o 'aluguel dinâmico', podemos fazer com que o aluguel seja <b> R$${lucroAluguel} </b> </span>
+		<br><br><br>
+		<button onclick='mostrarGrafico()'> Mostrar Grafico </button>
+
+		<div style=" width: 40%; height:15rem; display:none;" id="graficoDados"> 
+		<div style="background-color: green;width: 100%; height:33%; ">
+			<span style="color:white"> Lucro que você pode ter R$${lucroAluguel} (baseado no fluxo de pessoas)
+		</div> 
+		<div style="background-color: white; width: 100%; height:6%;">
+		
+		</div> 
+		<div style="background-color: orange; width: ${(valorAluguel*100)/lucroAluguel}%; height:33%;">
+			<span style="color:white;"> Seu lucro atual <b>${valorAluguel}</b> é <b>${(valorAluguel*100)/lucroAluguel}%</b>  do que poderia ser ganho</span>
+		</div> 
+	</div>
+
+
+`
+	}
+function mostrarGrafico(){
+	graficoDados.style.display = 'block';
+	
+
+}
+
+</script>
+
+</html>
