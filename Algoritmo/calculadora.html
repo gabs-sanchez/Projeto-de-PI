@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador financeiro</title>
+    <!--Carregando a API Google Charts para o código-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+
+        function okQuantSetores(){
+            var quantSetores = txtQuantSetores.value;
+            divQuantSensores.style.display = "none";
+
+            divAluguelESensores.innerHTML += "Insira o preço do aluguel cobrado: <input id='txtValorAluguel'><br>";
+            divAluguelESensores.innerHTML += "Insira a quantidade de disparos para cada setor:<br>";
+
+            //faz aparecerem os inputs para o usuário digitar o a quantidade de pessoas em cada setor
+            for (var i = 0; i < quantSetores; i++) {
+                divAluguelESensores.innerHTML += "<input class='txtDisparosSetor' placeholder='Setor " + (i+1) + "'><br>";
+            }
+
+            //faz o botão 'calcular' aparecer embaixo dos campos de disparos
+            divAluguelESensores.innerHTML += "<button id='btnCalcularQuantSetores' onclick='calcularPessoasArea()'>Calcular</button>";
+        }
+
+        function calcularPessoasArea(){
+            var valorAluguel = txtValorAluguel.value;
+            var elementosHTML = document.getElementsByClassName('txtDisparosSetor');//pegando todos os elementos input em que serão digitadas as quantidades de disparos
+            var quantidadeDeSetores = elementosHTML.length;
+            var valoresDisparos = [];
+            var nomesSetores = [];
+
+            //populando as matrizes valoresDisparos e nomesSetores com os dados dos inputs
+            for (var index = 0; index < elementosHTML.length; index++) {
+                valoresDisparos.push(Number(elementosHTML[index].value));
+                nomesSetores.push("Setor " + (index+1));
+            }
+
+            /* *** INÍCIO DO GRÁFICO *** */
+
+            // Carrega a API para carregar e exibir o gráfico
+            google.charts.load('current', {'packages':['corechart']});
+            // Manda a página carregar o gráfico quando ele estiver pronto para ser exibido
+            google.charts.setOnLoadCallback(drawChart);
+            //função que cria o gráfico, passa os dados pra ele e o desenha
+            function drawChart() {
+                // Criando a tabela de dados
+                var data = new google.visualization.DataTable();
+                // Dizendo à API os tipos de dados que serão carregados para o gráfico (se fosse uma tabela, essas seriam as colunas)
+                data.addColumn('string', 'Setor');
+                data.addColumn('number', 'Disparos');
+                // Adicionando uma linha para cada um dos setores
+                for(var linha = 0; linha < quantidadeDeSetores; linha++){
+                    data.addRow([nomesSetores[linha], valoresDisparos[linha]]);
+                }
+                // Opções do gráfico (título, largura e altura)
+                var options = {'title':'Quantidade de Disparos por Setor',
+                                'width':400,
+                                'height':300};
+
+                // Desenhando o gráfico na div reservada para a ele, passando as opções que acabamos de criar
+                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+
+            /* *** FIM DO GRÁFICO *** */
+
+            //Calculando a média
+            var somaDisparos = 0;
+            for (var index = 0; index < quantidadeDeSetores; index++) {
+                somaDisparos += valoresDisparos[index];
+            }
+            var media = somaDisparos/quantidadeDeSetores;
+            dadosDisparos.innerHTML += `A média de disparos por setor é de ${media}<br><br>`;
+
+            // Calculando e mostrando a tabela com os dados de cada sensor
+            var taxaAumento = 0.0;
+            var excedenteDisparos = 0.0;
+            var novoAluguel = 0.0;
+            var alugueisNovos = [];
+            dadosDisparos.innerHTML += "Nome do setor       |       Excedente       |       Aluguel sugerido<br>";
+            // Percorre cada um dos valores dentro da matriz valoresDisparos
+            for (var index = 0; index < quantidadeDeSetores; index++) {
+                // Se o valor atual tiver mais disparos do que a média, calcular os dados e mostrar eles na tabela
+                if(valoresDisparos[index] > media){
+                    excedenteDisparos = valoresDisparos[index]-media;
+                    taxaAumento = excedenteDisparos/media;
+                    novoAluguel = Number(txtValorAluguel.value) + Number(txtValorAluguel.value*taxaAumento);
+                    alugueisNovos.push(novoAluguel);
+
+                    dadosDisparos.innerHTML += nomesSetores[index] + "      |        ";//nome do setor
+                    dadosDisparos.innerHTML += excedenteDisparos.toFixed(2) + "        |       ";//excedente
+                    dadosDisparos.innerHTML += novoAluguel.toFixed(2) + "<br>";//aluguel sugerido
+                }
+            }
+
+            // Calculando quanto o cliente vai ganhar com a instalação dos sensores
+            var ganhosTotais = 0;
+            for (var index = 0; index < alugueisNovos.length; index++) {
+                ganhosTotais += alugueisNovos[index] - txtValorAluguel.value;
+            }
+            dadosDisparos.innerHTML += `<br>Ganhos totais: <span style='color: red;'>${ganhosTotais.toFixed(2)}</span>`;
+        }
+    </script>
+</head>
+<body>
+    <h1>Simulador de ganhos potenciais</h1>
+
+    <!-- div para conter o input em que será digitada a quantidade de setores-->
+    <div id="divQuantSensores">
+        Insira a quantidade de setores: <input id="txtQuantSetores"><br>
+        <button id="btnQuantSetores" onclick="okQuantSetores()">Ok</button>
+    </div>
+
+    <!-- div para conter as caixas para a quantidade de disparos de cada sensor -->
+    <div id="divAluguelESensores"></div>
+
+    <!-- div para conter o gráfico -->
+    <div id="chart_div"></div>
+
+    <!-- div para conter os dados dos sensores, como média de disparos-->
+    <div id="dadosDisparos"></div>
+</body>
+</html>
